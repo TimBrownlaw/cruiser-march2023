@@ -1,0 +1,7 @@
+node_modules
+.env
+*.zip
+modified_files.txt
+.vscode 
+/storage/
+/vendor/
