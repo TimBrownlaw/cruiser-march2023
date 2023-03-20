@@ -10,111 +10,108 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller {
-    /**
-     * Display a listing of the users
-     *
-     * @param User $model
-     * @return \Illuminate\View\View
-     */
-    public function index(User $model)
-    {
-        $users = $model->paginate(15);
+	/**
+	 * Display a listing of the users
+	 *
+	 * @param User $model
+	 *
+	 * @return \Illuminate\View\View
+	 */
+	public function index( User $model ) {
+		$users = $model->paginate( 15 );
 
-        return view('users.index', ['users' => $users]);
-    }
+		return view( 'users.index', [ 'users' => $users ] );
+	}
 
-    /**
-     * Show the form for creating a new user
-     *
-     * @return \Illuminate\View\View
-     */
-    public function create()
-    {
-        $groups = Group::orderBy('order')->get();
+	/**
+	 * Show the form for creating a new user
+	 *
+	 * @return \Illuminate\View\View
+	 */
+	public function create() {
+		$groups = Group::orderBy( 'order' )->get();
 
-        return view('users.create', compact('groups'));
-    }
+		return view( 'users.create', compact( 'groups' ) );
+	}
 
-    /**
-     * Store a newly created user in storage
-     *
-     * @param \App\Http\Requests\UserRequest $request
-     * @param User                           $model
-     * @return RedirectResponse
-     */
-    public function store(UserRequest $request, User $model)
-    {
-        //$model->create($request->merge(['password' => Hash::make($request->get('password'))])->all());
-        $model = new User();
-        $model->name = $request->get('name');
-        $model->email = $request->get('email');
-        $model->password = Hash::make($request->get('password'));
-        $model->is_admin = (intval($request->get('user_group')) == 1 ? 1 : 0);
-        $model->leads_allowed = intval($request->get('leads_allowed'));
-        $model->time_set_init = $request->get('time_set_init');
-        $model->time_set_final = $request->get('time_set_final');
-        $model->user_group = intval($request->get('user_group'));
-        $model->save();
+	/**
+	 * Store a newly created user in storage
+	 *
+	 * @param UserRequest $request
+	 * @param User        $model
+	 *
+	 * @return RedirectResponse
+	 */
+	public function store( UserRequest $request, User $model ) {
+		$model           = new User();
+		$model->name     = $request->get( 'name' );
+		$model->email    = $request->get( 'email' );
+		$model->password = Hash::make( $request->get( 'password' ) );
 
-        return redirect()->route('user.index')->withStatus(__('User successfully created.'));
-    }
+		$this->set_user_parameters( $request, $model );
+		$model->save();
 
-    /**
-     * Show the form for editing the specified user
-     *
-     * @param User $user
-     * @return \Illuminate\View\View
-     */
-    public function edit(User $user)
-    {
-        $groups = Group::orderBy('order')->get();
+		return redirect()->route( 'user.index' )->withStatus( __( 'User successfully created.' ) );
+	}
 
-        return view('users.edit', compact('user', 'groups'));
-    }
+	/**
+	 * Update the specified user in storage
+	 *
+	 * @param UserRequest $request
+	 * @param User        $user
+	 *
+	 * @return RedirectResponse
+	 */
+	public function update( UserRequest $request, User $user ) {
+		$model        = $user;
 
-    /**
-     * Update the specified user in storage
-     *
-     * @param \App\Http\Requests\UserRequest $request
-     * @param User                           $user
-     * @return RedirectResponse
-     */
-    public function update(UserRequest $request, User $user)
-    {
-        /*
-        $user->update(
-            $request->merge(['password' => Hash::make($request->get('password'))])
-                ->except([$request->get('password') ? '' : 'password']
-        ));*/
+		$model->name  = $request->get( 'name' );
+		$model->email = $request->get( 'email' );
 
-        $model = $user;
-        $model->name = $request->get('name');
-        $model->email = $request->get('email');
-        if (trim($request->get('password')) != '')
-        {
-            $model->password = Hash::make($request->get('password'));
-        }
-        $model->is_admin = (intval($request->get('user_group')) == 5 ? 1 : 0);
-        $model->leads_allowed = intval($request->get('leads_allowed'));
-        $model->time_set_init = $request->get('time_set_init');
-        $model->time_set_final = $request->get('time_set_final');
-        $model->user_group = intval($request->get('user_group'));
-        $model->save();
+		if ( trim( $request->get( 'password' ) ) != '' ) {
+			$model->password = Hash::make( $request->get( 'password' ) );
+		}
 
-        return redirect()->route('user.index')->withStatus(__('User successfully updated.'));
-    }
+		$this->set_user_parameters( $request, $model );
+		$model->save();
 
-    /**
-     * Remove the specified user from storage
-     *
-     * @param User $user
-     * @return RedirectResponse
-     * @throws Exception
-     */
-    public function destroy(User $user)
-    {
-        $user->delete();
+		return redirect()->route( 'user.index' )->withStatus( __( 'User successfully updated.' ) );
+	}
 
-        return redirect()->route('user.index')->withStatus(__('User successfully deleted.'));
-    }
+	private function set_user_parameters( UserRequest $request, $model ) {
+		$model->is_admin       = ( intval( $request->get( 'user_group' ) ) == 5 ? 1 : 0 );
+		$model->leads_allowed  = intval( $request->get( 'leads_allowed' ) );
+		$model->time_set_init  = $request->get( 'time_set_init' );
+		$model->time_set_final = $request->get( 'time_set_final' );
+		$model->user_group     = intval( $request->get( 'user_group' ) );
+	}
+
+	/**
+	 * Show the form for editing the specified user
+	 *
+	 * @param User $user
+	 *
+	 * @return \Illuminate\View\View
+	 */
+	public function edit( User $user ) {
+		$groups = Group::orderBy( 'order' )->get();
+
+		return view( 'users.edit', compact( 'user', 'groups' ) );
+	}
+
+
+
+	/**
+	 * Remove the specified user from storage
+	 *
+	 * @param User $user
+	 *
+	 * @return RedirectResponse
+	 * @throws Exception
+	 */
+	public function destroy( User $user ) {
+		$user->delete();
+
+		return redirect()->route( 'user.index' )->withStatus( __( 'User successfully deleted.' ) );
+	}
 }
