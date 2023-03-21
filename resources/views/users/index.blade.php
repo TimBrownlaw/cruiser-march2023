@@ -30,48 +30,52 @@
                             <!--        Here you can write extra buttons/actions for the toolbar              -->
                         </div>
                         <div class="card-body table-full-width table-responsive">
+                            {{ $users->links() }}
                             <table class="table table-hover table-striped">
                                 <thead>
+                                <th>{{ __('Name') }}</th>
+                                <th>{{ __('Email') }}</th>
+                                <th>{{ __('Start') }}</th>
+                                <th>{{ __('Group') }}</th>
+                                <th>{{ __('Actions') }}</th>
+                                </thead>
+                                <tfoot>
+                                <tr>
                                     <th>{{ __('Name') }}</th>
                                     <th>{{ __('Email') }}</th>
                                     <th>{{ __('Start') }}</th>
                                     <th>{{ __('Group') }}</th>
                                     <th>{{ __('Actions') }}</th>
-                                </thead>
-                                <tfoot>
-                                    <tr>
-                                        <th>{{ __('Name') }}</th>
-                                        <th>{{ __('Email') }}</th>
-                                        <th>{{ __('Start') }}</th>
-                                        <th>{{ __('Group') }}</th>
-                                        <th>{{ __('Actions') }}</th>
-                                    </tr>
+                                </tr>
+
                                 </tfoot>
+
                                 <tbody>
 
-                                    @foreach ($users as $user)
-                                        <tr>
-                                            <td>{{ $user->name }}</td>
-                                            <td>{{ $user->email }}</td>
-                                            <td>{{ $user->created_at }}</td>
-                                            <td>{{optional(optional($user)->get_group)->name}}</td>
-                                            <td class="d-flex justify-content-left">
-                                                @if ($user->id != auth()->id())
-                                                    <a href="{{ route('user.edit', $user->id) }}" class="btn btn-link btn-warning edit d-inline-block"><i class="fa fa-edit"></i></a>
+                                @foreach ($users as $user)
+                                    <tr>
+                                        <td>{{ $user->name }}</td>
+                                        <td>{{ $user->email }}</td>
+                                        <td>{{ $user->created_at }}</td>
+                                        <td>{{optional(optional($user)->get_group)->name}}</td>
+                                        <td class="d-flex justify-content-left">
+                                            @if ($user->id != auth()->id())
+                                                <a href="{{ route('user.edit', $user->id) }}" class="btn btn-link btn-warning edit d-inline-block"><i class="fa fa-edit"></i></a>
 
-                                                    <form class="d-inline-block" action="{{ route('user.destroy', $user->id) }}" method="POST">
-                                                        @method('delete')
-                                                        @csrf
-                                                        <a class="btn btn-link btn-danger " onclick="confirm('{{ __('Are you sure you want to delete this user?') }}') ? this.parentElement.submit() : ''"s><i class="fa fa-times"></i></a>
-                                                    </form>
-                                                @else
-                                                    <a href="{{ route('profile.edit', $user->id) }}" class="btn btn-link btn-warning edit d-inline-block"><i class="fa fa-edit"></i></a>
-                                                @endif
-                                            </td>
-                                        </tr>
-                                    @endforeach
+                                                <form class="d-inline-block" action="{{ route('user.destroy', $user->id) }}" method="POST">
+                                                    @method('delete')
+                                                    @csrf
+                                                    <a class="btn btn-link btn-danger " onclick="confirm('{{ __('Are you sure you want to delete this user?') }}') ? this.parentElement.submit() : ''" s><i class="fa fa-times"></i></a>
+                                                </form>
+                                            @else
+                                                <a href="{{ route('profile.edit', $user->id) }}" class="btn btn-link btn-warning edit d-inline-block"><i class="fa fa-edit"></i></a>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
                                 </tbody>
                             </table>
+                            {{ $users->links() }}
                         </div>
                     </div>
                 </div>
@@ -81,31 +85,31 @@
 @endsection
 
 @push('js')
-{{--    <script type="text/javascript">--}}
-{{--        $(document).ready(function() {--}}
-{{--            $('#datatables').DataTable({--}}
-{{--                "pagingType": "full_numbers",--}}
-{{--                "lengthMenu": [--}}
-{{--                    [10, 25, 50, -1],--}}
-{{--                    [10, 25, 50, "All"]--}}
-{{--                ],--}}
-{{--                responsive: true,--}}
-{{--                language: {--}}
-{{--                    search: "_INPUT_",--}}
-{{--                    searchPlaceholder: "Search records",--}}
-{{--                }--}}
+    {{--    <script type="text/javascript">--}}
+    {{--        $(document).ready(function() {--}}
+    {{--            $('#datatables').DataTable({--}}
+    {{--                "pagingType": "full_numbers",--}}
+    {{--                "lengthMenu": [--}}
+    {{--                    [10, 25, 50, -1],--}}
+    {{--                    [10, 25, 50, "All"]--}}
+    {{--                ],--}}
+    {{--                responsive: true,--}}
+    {{--                language: {--}}
+    {{--                    search: "_INPUT_",--}}
+    {{--                    searchPlaceholder: "Search records",--}}
+    {{--                }--}}
 
-{{--            });--}}
+    {{--            });--}}
 
 
-{{--            var table = $('#datatables').DataTable();--}}
+    {{--            var table = $('#datatables').DataTable();--}}
 
-{{--            // Delete a record--}}
-{{--            table.on('click', '.remove', function(e) {--}}
-{{--                $tr = $(this).closest('tr');--}}
-{{--                table.row($tr).remove().draw();--}}
-{{--                e.preventDefault();--}}
-{{--            });--}}
-{{--        });--}}
-{{--    </script>--}}
+    {{--            // Delete a record--}}
+    {{--            table.on('click', '.remove', function(e) {--}}
+    {{--                $tr = $(this).closest('tr');--}}
+    {{--                table.row($tr).remove().draw();--}}
+    {{--                e.preventDefault();--}}
+    {{--            });--}}
+    {{--        });--}}
+    {{--    </script>--}}
 @endpush
